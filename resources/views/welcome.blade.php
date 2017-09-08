@@ -6,22 +6,51 @@
     <nav>
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="{{ url('/') }}">Home</a>
             </li>
         </ul>
     </nav>
 </div>
 <div class="row">
+    <form action="messages/create" method="post">
+        <div class="form-group @if($errors->has('message')) has-danger @endif">
+            {{ csrf_field() }}
+            <input type="text" name="message" class="form-control" placeholder="Qué estás pensando?">
+              
+            {{-- @if($errors->any())
+                <!-- @foreach($errors->all() as $error) -->
+                @foreach($errors->get('message') as $error)
+                    {{ $error }}
+                @endforeach
+            @endif --}}
+
+            @if ($errors->has('message'))
+                @foreach ($errors->get('message') as $error)
+                <div class="form-control-feedback">{{ $error }}</div>
+                @endforeach
+            @endif
+
+        </div>
+    </form>
+</div>
+<div class="row">
     @forelse($messages as $message)
         <div class="col-6">
-            <img class="img-thumbnail" src="{{ $message['image'] }}">
+            <img class="img-thumbnail" src="{{ $message->image }}">
             <p class="card-text">
-                {{ $message['content'] }}
-                <a href="/messages/{{ $message['id'] }}">Leer más</a>
+                {{ $message->content }}
+                <a href="messages/{{ $message->id }}">Leer más</a>
             </p>
         </div>
     @empty
         <p>No hay mensajes destacados.</p>
     @endforelse
+
+    @if(count($messages))
+    <div class="mt-3 mx-auto"> 
+        {{ $messages->links('pagination::bootstrap-4') }}
+    </div>
+    @endif
+
 </div>
 @endsection
